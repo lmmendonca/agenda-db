@@ -1,6 +1,6 @@
 package model;
 
-public class Phones {
+public class Phone {
 
     private Integer phoneId;
     private String phone;

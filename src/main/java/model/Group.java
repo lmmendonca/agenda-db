@@ -1,6 +1,6 @@
 package model;
 
-public class Groups {
+public class Group {
 
     private Integer groupId;
     private String description;
