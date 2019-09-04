@@ -10,6 +10,10 @@ public class Group {
         this.description = description;
     }
 
+    public Group(String description) {
+        this.description = description;
+    }
+
     public Integer getGroupId() {
         return groupId;
     }

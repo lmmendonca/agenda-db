@@ -10,6 +10,10 @@ public class Phone {
         this.phone = phone;
     }
 
+    public Phone(String phone) {
+        this.phone = phone;
+    }
+
     public Integer getPhoneId() {
         return phoneId;
     }

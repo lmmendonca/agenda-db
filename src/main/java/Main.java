@@ -1,11 +1,20 @@
 import model.Contact;
+import model.Group;
+import model.Phone;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     private static final String URL = "jdbc:sqlite:db:sqlite";
 
     public static void main(String[] args) {
+//        insertContact(new Contact("Elias", "Red", "elias@gmail.com"));
+//        insertPhone(new Phone("47991411323"));
+//        insertGroup(new Group("Favoritos"));
+
+        getAllContacts().forEach(System.out::println);
 
     }
 
@@ -19,7 +28,7 @@ public class Main {
         return conn;
     }
 
-    public static void executeSql(String sql) {
+    private static void executeSql(String sql) {
         Connection conn = null;
         try {
             conn = connect();
@@ -36,22 +45,6 @@ public class Main {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    public static void insert(int id, String firstName, String lastName, String email) {
-        String sql = "INSERT INTO contacts VALUES(?, ?, ?, ?)";
-
-        try {
-            Connection conn = connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            pstmt.setString(2, firstName);
-            pstmt.setString(3, lastName);
-            pstmt.setString(4, email);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
         }
     }
 
@@ -119,88 +112,112 @@ public class Main {
         executeSql(tContactsPhones);
     }
 
-    private static void insertContact(Contact c) {
-        String sql = "INSERT INTO contacts(first_name, last_name, email) VALUES(?, ?, ?, ?);";
+    private static Contact insertContact(Contact c) {
+        String sql = "INSERT INTO contacts(first_name, last_name, email) VALUES(?, ?, ?);";
 
         try {
             Connection conn = connect();
             PreparedStatement pstmt = conn.prepareStatement(sql);
 
-            pstmt.setString(2, c.getFirstName());
-            pstmt.setString(3, c.getLastName());
-            pstmt.setString(4, c.getEmail());
+            pstmt.setString(1, c.getFirstName());
+            pstmt.setString(2, c.getLastName());
+            pstmt.setString(3, c.getEmail());
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
+        return c;
     }
 
-    private static void insertPhone(int id, String phone) {
-        String sql = "INSERT INTO phones VALUES(?, ?);";
+    private static Phone insertPhone(Phone p) {
+        String sql = "INSERT INTO phones(phone) VALUES(?);";
 
         try {
             Connection conn = connect();
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            pstmt.setString(2, phone);
+
+            pstmt.setString(1, p.getPhone());
             pstmt.executeUpdate();
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
+        return p;
     }
 
-    private static void insertGroup(int id, String description) {
-        String sql = "INSERT INTO groups VALUES(?, ?);";
+    private static Group insertGroup(Group g) {
+        String sql = "INSERT INTO groups(description) VALUES(?);";
 
         try {
             Connection conn = connect();
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            pstmt.setString(2, description);
+
+            pstmt.setString(1, g.getDescription());
             pstmt.executeUpdate();
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
+        return g;
+
     }
 
-    private static void getAllContacts() {
+    private static List<Contact> getAllContacts() {
         String sql = "SELECT * FROM contacts;";
 
+        List<Contact> list = new ArrayList<>();
         try {
             Connection conn = connect();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
-                System.out.println(rs.getInt(1) + " " +
-                        rs.getString(2) + " " + rs.getString(3)
-                        + " " + rs.getString(4));
+                list.add(new Contact(
+                        rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getString(4)
+                ));
             }
+
+            return list;
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
+        return list;
     }
 
-    public static void getContactById(Integer id) {
+    public static Contact getContactById(Integer id) {
         String sql = "SELECT * FROM contacts WHERE contact_id = ?;";
 
         try {
             Connection conn = connect();
             PreparedStatement pstmt = conn.prepareStatement(sql);
+
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                System.out.println(rs.getInt(1) + " " +
-                        rs.getString(2) + " " + rs.getString(3)
-                        + " " + rs.getString(4));
-            }
+
+            return new Contact(
+                    rs.getInt(1),
+                    rs.getString(2),
+                    rs.getString(3),
+                    rs.getString(4)
+            );
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
+        return null;
     }
 
-    public static void getContactByName(String nome) {
+    public static Contact getContactByName(String nome) {
         String sql = "SELECT * FROM contacts WHERE first_name = ?;";
 
         try {
@@ -208,14 +225,18 @@ public class Main {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, nome);
             ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                System.out.println(rs.getInt(1) + " " +
-                        rs.getString(2) + " " + rs.getString(3)
-                        + " " + rs.getString(4));
-            }
+            return new Contact(
+                    rs.getInt(1),
+                    rs.getString(2),
+                    rs.getString(3),
+                    rs.getString(4)
+            );
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
+        return null;
     }
 
 
