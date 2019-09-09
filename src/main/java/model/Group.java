@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 public class Group {
 
     private Integer groupId;
@@ -32,9 +34,6 @@ public class Group {
 
     @Override
     public String toString() {
-        return "Group{" +
-                "groupId=" + groupId +
-                ", description='" + description + '\'' +
-                '}';
+        return "Group{" + "groupId=" + groupId + ", description='" + description + '\'' + '}';
     }
 }

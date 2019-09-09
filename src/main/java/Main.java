@@ -10,12 +10,11 @@ public class Main {
     private static final String URL = "jdbc:sqlite:db:sqlite";
 
     public static void main(String[] args) {
-//        insertContact(new Contact("Elias", "Red", "elias@gmail.com"));
-//        insertPhone(new Phone("47991411323"));
-//        insertGroup(new Group("Favoritos"));
+        //        insertContact(new Contact("Elias", "Red", "elias@gmail.com"));
+        //        insertPhone(new Phone("47991411323"));
+        //        insertGroup(new Group("Favoritos"));
 
         getAllContacts().forEach(System.out::println);
-
     }
 
     private static Connection connect() {
@@ -49,60 +48,35 @@ public class Main {
     }
 
     private static void createTeble() {
-        String tGroups = "create table if not exists main.groups\n" +
-                "(\n" +
-                "\tgroup_id integer not null\n" +
-                "\t\tconstraint groups_pk\n" +
-                "\t\t\tprimary key autoincrement,\n" +
-                "\tdescription text not null\n" +
-                ");";
+        String tGroups =
+                "create table if not exists main.groups (" +
+                        "group_id integer not null constraint groups_pk primary key autoincrement, " +
+                        "description text not null);";
 
-        String tContacts = "create table if not exists main.contacts\n" +
-                "(\n" +
-                "\tcontact_id integer not null\n" +
-                "\t\tconstraint contacts_pk\n" +
-                "\t\t\tprimary key autoincrement,\n" +
-                "\tfirst_name text not null,\n" +
-                "\tlast_name text not null,\n" +
-                "\temail text not null\n" +
-                ");\n" +
-                "\n" +
-                "create unique index contacts_email_uindex\n" +
-                "\ton contacts (email);";
+        String tContacts =
+                "create table if not exists main.contacts (" +
+                        "contact_id integer not null constraint contacts_pk primary key autoincrement," +
+                        "first_name text not null," +
+                        "last_name text not null," +
+                        "email text not null );" +
+                        "create unique index contacts_email_uindex on contacts (email);";
 
-        String tPhones = "create table if not exists main.phones\n" +
-                "(\n" +
-                "\tphone_id integer not null\n" +
-                "\t\tconstraint phones_pk\n" +
-                "\t\t\tprimary key autoincrement,\n" +
-                "\tphone text not null\n" +
-                ");\n";
+        String tPhones =
+                "create table if not exists main.phones ("
+                        + "phone_id integer not null constraint phones_pk primary key autoincrement,"
+                        + "phone text not null);";
 
-        String tContactsGroups = "create table if not exists main.contacts_groups\n" +
-                "(\n" +
-                "\tid integer not null\n" +
-                "\t\tconstraint contacts_groups_pk\n" +
-                "\t\t\tprimary key autoincrement,\n" +
-                "\tcontact_id integer not null\n" +
-                "\t\tconstraint contact_id__fk\n" +
-                "\t\t\treferences contacts,\n" +
-                "\tgroup_id integer not null\n" +
-                "\t\tconstraint group_id__fk\n" +
-                "\t\t\treferences groups\n" +
-                ");";
+        String tContactsGroups =
+                "create table if not exists main.contacts_groups(" +
+                        "id integer not null constraint contacts_groups_pk primary key autoincrement,"
+                        + "contact_id integer not null constraint contact_id__fk references contacts,"
+                        + "group_id integer not null constraint group_id__fk references groups);";
 
-        String tContactsPhones = "create table if not exists main.contacts_phones\n" +
-                "(\n" +
-                "\tid integer not null\n" +
-                "\t\tconstraint contacts_phones_pk\n" +
-                "\t\t\tprimary key autoincrement,\n" +
-                "\tcontact_id integer not null\n" +
-                "\t\tconstraint p_contacts_id__fk\n" +
-                "\t\t\treferences contacts,\n" +
-                "\tphone_id integer not null\n" +
-                "\t\tconstraint c_phones___fk\n" +
-                "\t\t\treferences phones\n" +
-                ");";
+        String tContactsPhones =
+                "create table if not exists main.contacts_phones (" +
+                        "id integer not null constraint contacts_phones_pk primary key autoincrement, " +
+                        "contact_id integer not null constraint p_contacts_id__fk references contacts," +
+                        "phone_id integer not null constraint c_phones___fk references phones);";
 
         // criacao das tabelas
         executeSql(tGroups);
@@ -124,11 +98,13 @@ public class Main {
             pstmt.setString(3, c.getEmail());
             pstmt.executeUpdate();
 
+            c.setContactId(pstmt.getGeneratedKeys().getInt(1));
+            return c;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        return c;
+        return null;
     }
 
     private static Phone insertPhone(Phone p) {
@@ -141,11 +117,15 @@ public class Main {
             pstmt.setString(1, p.getPhone());
             pstmt.executeUpdate();
 
+            p.setPhoneId(pstmt.getGeneratedKeys().getInt(1));
+
+            return p;
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        return p;
+        return null;
     }
 
     private static Group insertGroup(Group g) {
@@ -153,17 +133,19 @@ public class Main {
 
         try {
             Connection conn = connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+            PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             pstmt.setString(1, g.getDescription());
             pstmt.executeUpdate();
+
+            g.setGroupId(pstmt.getGeneratedKeys().getInt(1));
+            return g;
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        return g;
-
+        return null;
     }
 
     private static List<Contact> getAllContacts() {
@@ -176,12 +158,7 @@ public class Main {
             ResultSet rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
-                list.add(new Contact(
-                        rs.getInt(1),
-                        rs.getString(2),
-                        rs.getString(3),
-                        rs.getString(4)
-                ));
+                list.add(new Contact(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4)));
             }
 
             return list;
@@ -203,12 +180,7 @@ public class Main {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
 
-            return new Contact(
-                    rs.getInt(1),
-                    rs.getString(2),
-                    rs.getString(3),
-                    rs.getString(4)
-            );
+            return new Contact(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4));
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -225,12 +197,7 @@ public class Main {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, nome);
             ResultSet rs = pstmt.executeQuery();
-            return new Contact(
-                    rs.getInt(1),
-                    rs.getString(2),
-                    rs.getString(3),
-                    rs.getString(4)
-            );
+            return new Contact(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4));
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -238,6 +205,4 @@ public class Main {
 
         return null;
     }
-
-
 }

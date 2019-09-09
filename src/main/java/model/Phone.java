@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 public class Phone {
 
     private Integer phoneId;
@@ -32,9 +34,6 @@ public class Phone {
 
     @Override
     public String toString() {
-        return "Phone{" +
-                "phoneId=" + phoneId +
-                ", phone='" + phone + '\'' +
-                '}';
+        return "Phone{" + "phoneId=" + phoneId + ", phone='" + phone + '\'' + '}';
     }
 }

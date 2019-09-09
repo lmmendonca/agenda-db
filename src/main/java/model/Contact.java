@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 public class Contact {
 
     private Integer contactId;
@@ -54,11 +56,18 @@ public class Contact {
 
     @Override
     public String toString() {
-        return "Contact{" +
-                "contactId=" + contactId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+        return "Contact{"
+                + "contactId="
+                + contactId
+                + ", firstName='"
+                + firstName
+                + '\''
+                + ", lastName='"
+                + lastName
+                + '\''
+                + ", email='"
+                + email
+                + '\''
+                + '}';
     }
 }
