@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Contact {
@@ -8,6 +9,8 @@ public class Contact {
     private String firstName;
     private String lastName;
     private String email;
+    private List<Group> groups = new ArrayList<>();
+    private List<Phone> phones = new ArrayList<>();
 
     public Contact(Integer contactId, String firstName, String lastName, String email) {
         this.contactId = contactId;
