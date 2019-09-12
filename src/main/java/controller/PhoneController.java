@@ -6,13 +6,14 @@ import service.DataService;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class PhoneController {
 
     public PhoneController() {
     }
 
-    private Phone insertPhone(Phone p) {
+    public Phone create(Phone p) {
         String sql = "INSERT INTO phones(phone) VALUES(?);";
 
         try {
@@ -33,6 +34,15 @@ public class PhoneController {
 
         return null;
     }
+
+    public List<Phone> create(List<Phone> p) {
+        if (p.size() > 0) {
+            p.forEach(this::create);
+            return p;
+        }
+        return null;
+    }
+
 
     public Phone getPhoneById(Integer id) {
         String sql = "SELECT * FROM phones WHERE phone_id = ?;";

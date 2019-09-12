@@ -1,6 +1,8 @@
 package controller;
 
 import model.Contact;
+import model.Group;
+import model.Phone;
 import service.DataService;
 
 import java.sql.PreparedStatement;
@@ -12,7 +14,7 @@ import java.util.List;
 
 public class ContactController {
 
-  private Contact insertContact(Contact c) {
+  public Contact create(Contact c) {
     String sql = "INSERT INTO contacts(first_name, last_name, email) VALUES(?, ?, ?);";
 
     try {
@@ -22,8 +24,14 @@ public class ContactController {
       pstmt.setString(2, c.getLastName());
       pstmt.setString(3, c.getEmail());
       pstmt.executeUpdate();
-
       c.setContactId(pstmt.getGeneratedKeys().getInt(1));
+
+      new PhoneController().create(c.getPhones());
+      new GroupsController().create(c.getGroups());
+      createContactsPhones(c);
+      createContactsGroups(c);
+
+
       return c;
     } catch (SQLException e) {
       System.out.println(e.getMessage());
@@ -32,7 +40,7 @@ public class ContactController {
     return null;
   }
 
-  private List<Contact> getAllContacts() {
+  private List<Contact> getAll() {
     String sql = "SELECT * FROM contacts;";
 
     List<Contact> list = new ArrayList<>();
@@ -88,43 +96,39 @@ public class ContactController {
     return null;
   }
 
-//  public ContactsGroups insertContactGroups(ContactsGroups cg) {
-//    String sql = "INSERT INTO contacts_groups(contact_id, group_id) VALUES(?, ?);";
-//
-//    try {
-//      PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
-//
-//      pstmt.setInt(1, cg.getContact().getContactId());
-//      pstmt.setInt(2, cg.getGroup().getGroupId());
-//      pstmt.executeUpdate();
-//
-//      cg.setId(pstmt.getGeneratedKeys().getInt(1));
-//      return cg;
-//
-//    } catch (SQLException e) {
-//      System.out.println(e.getMessage());
-//    }
-//
-//    return null;
-//  }
-//
-//  public ContactsPhones insertContactPhones(ContactsPhones cp) {
-//    String sql = "INSERT INTO contacts_phones(contact_id, phone_id) VALUES(?, ?);";
-//
-//    try {
-//      PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
-//
-//      pstmt.setInt(1, cp.getContact().getContactId());
-//      pstmt.setInt(2, cp.getPhone().getPhoneId());
-//      pstmt.executeUpdate();
-//
-//      cp.setId(pstmt.getGeneratedKeys().getInt(1));
-//      return cp;
-//
-//    } catch (SQLException e) {
-//      System.out.println(e.getMessage());
-//    }
-//
-//    return null;
-//  }
+  private void createContactsPhones(Contact c) {
+    String sql = "INSERT INTO contacts_phones(contact_id, phone_id) VALUES (?, ?);";
+
+    for (Phone p : c.getPhones()) {
+      try {
+        PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
+        pstmt.setInt(1, c.getContactId());
+        pstmt.setInt(2, p.getPhoneId());
+        pstmt.executeUpdate();
+
+      } catch (SQLException e) {
+        System.out.println(e.getMessage());
+      }
+    }
+
+  }
+
+  private void createContactsGroups(Contact c) {
+    String sql = "INSERT INTO contacts_groups(contact_id, group_id) VALUES (?, ?);";
+
+    for (Group g : c.getGroups()) {
+      try {
+        PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
+        pstmt.setInt(1, c.getContactId());
+        pstmt.setInt(2, g.getGroupId());
+        pstmt.executeUpdate();
+
+      } catch (SQLException e) {
+        System.out.println(e.getMessage());
+      }
+    }
+
+  }
+
+
 }

@@ -57,20 +57,41 @@ public class Contact {
         this.email = email;
     }
 
+    public List<Group> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
+    }
+
+    public List<Group> addGroup(Group group) {
+        this.groups.add(group);
+        return this.groups;
+    }
+
+    public List<Phone> getPhones() {
+        return phones;
+    }
+
+    public void setPhones(List<Phone> phones) {
+        this.phones = phones;
+    }
+
+    public List<Phone> addPhone(Phone phone) {
+        this.phones.add(phone);
+        return this.phones;
+    }
+
     @Override
     public String toString() {
-        return "Contact{"
-                + "contactId="
-                + contactId
-                + ", firstName='"
-                + firstName
-                + '\''
-                + ", lastName='"
-                + lastName
-                + '\''
-                + ", email='"
-                + email
-                + '\''
-                + '}';
+        return "Contact{" +
+                "contactId=" + contactId +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", groups=" + groups +
+                ", phones=" + phones +
+                '}';
     }
 }

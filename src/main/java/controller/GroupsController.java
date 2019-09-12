@@ -7,12 +7,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 public class GroupsController {
 
   public GroupsController() {}
 
-    private static Group insertGroup(Group g) {
+    public Group create(Group g) {
         String sql = "INSERT INTO groups(description) VALUES(?);";
 
         try {
@@ -34,7 +35,15 @@ public class GroupsController {
         return null;
     }
 
-    public static Group getGroupByDescription(String description) {
+    public List<Group> create(List<Group> g) {
+      if (g.size() > 0) {
+          g.forEach(this::create);
+          return g;
+      }
+      return null;
+    }
+
+    public Group getGroupByDescription(String description) {
         String sql = "SELECT * FROM groups WHERE description = ?;";
 
         try {
