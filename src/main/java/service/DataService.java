@@ -20,7 +20,7 @@ public class DataService {
     return conn;
   }
 
-    private static void createTeble() {
+    public static void createTeble() {
         String tGroups =
                 "create table if not exists main.groups (" +
                         "group_id integer not null constraint groups_pk primary key autoincrement, " +

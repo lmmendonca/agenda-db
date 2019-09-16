@@ -6,6 +6,7 @@ import service.DataService;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PhoneController {
@@ -62,6 +63,29 @@ public class PhoneController {
         }
 
         return null;
+    }
+
+    public List<Phone> getPhonesByContactId(Integer id) {
+        String sql = "SELECT p.phone_id, phone FROM phones p, contacts_phones cp " +
+                "where p.phone_id = cp.phone_id " +
+                "and cp.contact_id = ?;";
+
+        List<Phone> phones = new ArrayList<>();
+
+        try {
+            PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                phones.add(new Phone(rs.getInt(1), rs.getString(2)));
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return phones;
     }
 
     public Phone getPhoneByPhone(String phone) {

@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GroupsController {
@@ -41,6 +42,29 @@ public class GroupsController {
           return g;
       }
       return null;
+    }
+
+    public List<Group> getGroupsByContactId(Integer id) {
+        String sql = "SELECT g.group_id, g.description FROM groups g, contacts_groups cg " +
+                "where g.group_id = cg.group_id " +
+                "and cg.contact_id = ?;";
+
+        List<Group> groups = new ArrayList<>();
+
+        try {
+            PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                groups.add(new Group(rs.getInt(1), rs.getString(2)));
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return groups;
     }
 
     public Group getGroupByDescription(String description) {

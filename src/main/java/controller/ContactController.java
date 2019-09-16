@@ -31,7 +31,6 @@ public class ContactController {
       createContactsPhones(c);
       createContactsGroups(c);
 
-
       return c;
     } catch (SQLException e) {
       System.out.println(e.getMessage());
@@ -40,25 +39,28 @@ public class ContactController {
     return null;
   }
 
-  private List<Contact> getAll() {
+  public List<Contact> getAll() {
     String sql = "SELECT * FROM contacts;";
 
-    List<Contact> list = new ArrayList<>();
+    List<Contact> contacts = new ArrayList<>();
     try {
       Statement stmt = DataService.CONNECTION.createStatement();
       ResultSet rs = stmt.executeQuery(sql);
 
       while (rs.next()) {
-        list.add(new Contact(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4)));
+        contacts.add(new Contact(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4)));
       }
 
-      return list;
+      contacts.forEach(c -> {
+        c.setPhones(new PhoneController().getPhonesByContactId(c.getContactId()));
+        c.setGroups(new GroupsController().getGroupsByContactId(c.getContactId()));
+      });
 
     } catch (SQLException e) {
       System.out.println(e.getMessage());
     }
 
-    return list;
+    return contacts;
   }
 
   public Contact getContactById(Integer id) {

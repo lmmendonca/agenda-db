@@ -1,0 +1,18 @@
+----------------------------------------------------------------------------
+***************************   MENU AGENDA   ********************************
+----------------------------------------------------------------------------
+Power by: Leonardo Maximino
+
+Comandos disponiveis
+
+Agenda:
+1 - Listar Contatos;
+2 - Cadastrar Contato;
+3 - Editar Contato;
+4 - Remover Contato;
+5 - Limpar Agenda (Exclui todos os contatos);
+
+Sistema:
+8 - Exibir Menu;
+9 - Encerrar Sistema;
+----------------------------------------------------------------------------
