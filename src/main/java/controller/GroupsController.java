@@ -1,6 +1,7 @@
 package controller;
 
 import model.Group;
+import model.Phone;
 import service.DataService;
 
 import java.sql.PreparedStatement;
@@ -79,6 +80,42 @@ public class GroupsController {
                     rs.getInt(1),
                     rs.getString(2)
             );
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    private Group delete(Group g){
+        String sql = "DELETE FROM groups where group_id = ?;";
+
+        try {
+            PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
+
+            pstmt.setInt(1, g.getGroupId());
+            pstmt.executeQuery();
+
+            return g;
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    private Group update(Group g){
+        String sql = "UPDATE groups SET description = ? WHERE group_id = ?;";
+
+        try {
+            PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
+            pstmt.setString(1, g.getDescription());
+            pstmt.setInt(2, g.getGroupId());
+            pstmt.executeQuery();
+
+            return g;
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());

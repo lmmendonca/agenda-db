@@ -72,7 +72,14 @@ public class ContactController {
       pstmt.setInt(1, id);
       ResultSet rs = pstmt.executeQuery();
 
-      return new Contact(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4));
+      return new Contact(
+              id,
+              rs.getString(2),
+              rs.getString(3),
+              rs.getString(4),
+              new GroupsController().getGroupsByContactId(id),
+              new PhoneController().getPhonesByContactId(id)
+      );
 
     } catch (SQLException e) {
       System.out.println(e.getMessage());
@@ -89,7 +96,16 @@ public class ContactController {
       pstmt.setString(1, nome);
       ResultSet rs = pstmt.executeQuery();
 
-      return new Contact(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4));
+      Integer id = rs.getInt(1);
+
+      return new Contact(
+              id,
+              rs.getString(2),
+              rs.getString(3),
+              rs.getString(4),
+              new GroupsController().getGroupsByContactId(id),
+              new PhoneController().getPhonesByContactId(id)
+      );
 
     } catch (SQLException e) {
       System.out.println(e.getMessage());
@@ -132,5 +148,76 @@ public class ContactController {
 
   }
 
+  private Contact delete(Contact c) {
+    String sql = "DELETE FROM contacts where contact_id = ?;";
+
+    try {
+      PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
+
+      pstmt.setInt(1, c.getContactId());
+      pstmt.executeQuery();
+
+      return c;
+
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
+    }
+
+    return null;
+  }
+
+  private void deleteContactsGroupsByContactId(Contact c) {
+    String sql = "DELETE FROM contacts_groups WHERE contact_id = ?;";
+
+    try {
+      PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
+
+      pstmt.setInt(1, c.getContactId());
+      pstmt.executeQuery();
+
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
+    }
+
+  }
+
+  private void deleteContactsPhonesByContactId(Contact c) {
+    String sql = "DELETE FROM contacts_phones WHERE contact_id = ?;";
+
+    try {
+      PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
+
+      pstmt.setInt(1, c.getContactId());
+      pstmt.executeQuery();
+
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
+    }
+
+  }
+
+  private Contact update(Contact c) {
+    String sql = "UPDATE contacts " +
+            "SET first_name = ? " +
+            "AND last_name = ? " +
+            "AND email = ? " +
+            "WHERE contact_id = ?;";
+
+    try {
+      PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
+      pstmt.setString(1, c.getFirstName());
+      pstmt.setString(2, c.getLastName());
+      pstmt.setString(3, c.getEmail());
+      pstmt.setInt(4, c.getContactId());
+      pstmt.executeQuery();
+
+      return c;
+
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
+    }
+
+    return null;
+  }
 
 }

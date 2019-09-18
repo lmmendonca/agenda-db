@@ -1,5 +1,6 @@
 package controller;
 
+import model.Group;
 import model.Phone;
 import service.DataService;
 
@@ -100,6 +101,42 @@ public class PhoneController {
                     rs.getInt(1),
                     rs.getString(2)
             );
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    private Phone delete(Phone p){
+        String sql = "DELETE FROM phones where phone_id = ?;";
+
+        try {
+            PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
+
+            pstmt.setInt(1, p.getPhoneId());
+            pstmt.executeQuery();
+
+            return p;
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    private Phone update(Phone p){
+        String sql = "UPDATE phones SET phone = ? WHERE phone_id = ?;";
+
+        try {
+            PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
+            pstmt.setString(1, p.getPhone());
+            pstmt.setInt(2, p.getPhoneId());
+            pstmt.executeQuery();
+
+            return p;
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());

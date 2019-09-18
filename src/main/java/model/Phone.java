@@ -12,6 +12,9 @@ public class Phone {
         this.phone = phone;
     }
 
+    public Phone() {
+    }
+
     public Phone(String phone) {
         this.phone = phone;
     }

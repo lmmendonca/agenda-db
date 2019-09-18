@@ -19,10 +19,22 @@ public class Contact {
         this.email = email;
     }
 
+    public Contact(Integer contactId, String firstName, String lastName, String email, List<Group> groups, List<Phone> phones) {
+        this.contactId = contactId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.groups = groups;
+        this.phones = phones;
+    }
+
     public Contact(String firstName, String lastName, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+    }
+
+    public Contact() {
     }
 
     public Integer getContactId() {
