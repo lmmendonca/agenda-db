@@ -33,9 +33,11 @@ public class AgendaDbApp {
                         break;
                     case "3":
                         // edita contato(pode ter grupo e telefones)
+                        System.out.println("Comando não Implementado!");
                         break;
                     case "4":
                         // remove contato(pode ter grupo e telefones)
+                        System.out.println("Comando não Implementado!");
                         break;
                     case "8":
                         FileHelper.printFromFile(MENU_PATH);
