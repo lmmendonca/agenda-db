@@ -1,0 +1,6 @@
+DELEÇÃO DE CONTATO
+
+Informe a opção que deseja executar:
+
+1 - Deletar pelo Nome Completo;
+2 - Deletar pelo ID;

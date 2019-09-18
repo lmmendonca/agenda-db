@@ -1,9 +1,8 @@
 package controller;
 
-import model.Group;
 import model.Phone;
-import service.DataService;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,137 +11,131 @@ import java.util.List;
 
 public class PhoneController {
 
-    public PhoneController() {
+  private Connection connection;
+
+  public PhoneController(Connection connection) {
+    this.connection = connection;
+  }
+
+  public Phone create(Phone p) {
+    String sql = "INSERT INTO phones(phone) VALUES(?);";
+
+    try {
+      PreparedStatement pstmt = connection.prepareStatement(sql);
+
+      pstmt.setString(1, p.getPhone());
+      pstmt.executeUpdate();
+
+      p.setPhoneId(pstmt.getGeneratedKeys().getInt(1));
+
+      return p;
+
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
     }
 
-    public Phone create(Phone p) {
-        String sql = "INSERT INTO phones(phone) VALUES(?);";
+    return null;
+  }
 
-        try {
-            PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
+  public List<Phone> create(List<Phone> p) {
+    if (p.size() > 0) {
+      p.forEach(this::create);
+      return p;
+    }
+    return null;
+  }
 
-            pstmt.setString(1, p.getPhone());
-            pstmt.executeUpdate();
+  public Phone getPhoneById(Integer id) {
+    String sql = "SELECT * FROM phones WHERE phone_id = ?;";
 
-            p.setPhoneId(
-                    pstmt.getGeneratedKeys().getInt(1)
-            );
+    try {
+      PreparedStatement pstmt = connection.prepareStatement(sql);
+      pstmt.setInt(1, id);
+      ResultSet rs = pstmt.executeQuery();
 
-            return p;
+      return new Phone(rs.getInt(1), rs.getString(2));
 
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return null;
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
     }
 
-    public List<Phone> create(List<Phone> p) {
-        if (p.size() > 0) {
-            p.forEach(this::create);
-            return p;
-        }
-        return null;
+    return null;
+  }
+
+  public List<Phone> getPhonesByContactId(Integer id) {
+    String sql =
+        "SELECT p.phone_id, phone FROM phones p, contacts_phones cp "
+            + "where p.phone_id = cp.phone_id "
+            + "and cp.contact_id = ?;";
+
+    List<Phone> phones = new ArrayList<>();
+
+    try {
+      PreparedStatement pstmt = connection.prepareStatement(sql);
+      pstmt.setInt(1, id);
+      ResultSet rs = pstmt.executeQuery();
+
+      while (rs.next()) {
+        phones.add(new Phone(rs.getInt(1), rs.getString(2)));
+      }
+
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
     }
 
+    return phones;
+  }
 
-    public Phone getPhoneById(Integer id) {
-        String sql = "SELECT * FROM phones WHERE phone_id = ?;";
+  public Phone getPhoneByPhone(String phone) {
+    String sql = "SELECT * FROM phones WHERE phone = ?;";
 
-        try {
-            PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
+    try {
+      PreparedStatement pstmt = connection.prepareStatement(sql);
+      pstmt.setString(1, phone);
+      ResultSet rs = pstmt.executeQuery();
 
-            return new Phone(
-                    rs.getInt(1),
-                    rs.getString(2)
-            );
+      return new Phone(rs.getInt(1), rs.getString(2));
 
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return null;
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
     }
 
-    public List<Phone> getPhonesByContactId(Integer id) {
-        String sql = "SELECT p.phone_id, phone FROM phones p, contacts_phones cp " +
-                "where p.phone_id = cp.phone_id " +
-                "and cp.contact_id = ?;";
+    return null;
+  }
 
-        List<Phone> phones = new ArrayList<>();
+  public Phone delete(Phone p) {
+    String sql = "DELETE FROM phones where phone_id = ?;";
 
-        try {
-            PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
+    try {
+      PreparedStatement pstmt = connection.prepareStatement(sql);
 
-            while (rs.next()) {
-                phones.add(new Phone(rs.getInt(1), rs.getString(2)));
-            }
+      pstmt.setInt(1, p.getPhoneId());
+      pstmt.executeUpdate();
 
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+      return p;
 
-        return phones;
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
     }
 
-    public Phone getPhoneByPhone(String phone) {
-        String sql = "SELECT * FROM phones WHERE phone = ?;";
+    return null;
+  }
 
-        try {
-            PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
-            pstmt.setString(1, phone);
-            ResultSet rs = pstmt.executeQuery();
+  private Phone update(Phone p) {
+    String sql = "UPDATE phones SET phone = ? WHERE phone_id = ?;";
 
-            return new Phone(
-                    rs.getInt(1),
-                    rs.getString(2)
-            );
+    try {
+      PreparedStatement pstmt = connection.prepareStatement(sql);
+      pstmt.setString(1, p.getPhone());
+      pstmt.setInt(2, p.getPhoneId());
+      pstmt.executeQuery();
 
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+      return p;
 
-        return null;
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
     }
 
-    private Phone delete(Phone p){
-        String sql = "DELETE FROM phones where phone_id = ?;";
-
-        try {
-            PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
-
-            pstmt.setInt(1, p.getPhoneId());
-            pstmt.executeQuery();
-
-            return p;
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return null;
-    }
-
-    private Phone update(Phone p){
-        String sql = "UPDATE phones SET phone = ? WHERE phone_id = ?;";
-
-        try {
-            PreparedStatement pstmt = DataService.CONNECTION.prepareStatement(sql);
-            pstmt.setString(1, p.getPhone());
-            pstmt.setInt(2, p.getPhoneId());
-            pstmt.executeQuery();
-
-            return p;
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return null;
-    }
-
+    return null;
+  }
 }
