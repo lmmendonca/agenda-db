@@ -1,4 +1,5 @@
 import controller.ContactController;
+import controller.PhoneController;
 import helper.FileHelper;
 import model.Contact;
 import model.Group;
@@ -34,11 +35,10 @@ public class AgendaDbApp {
             addContact(scanner);
             break;
           case "3":
-            // edita contato(pode ter grupo e telefones)
-            System.out.println("Comando não Implementado!");
+            edit(scanner);
             break;
           case "4":
-            deleteContact(scanner);
+            delete(scanner);
             break;
           case "8":
             FileHelper.printFromFile(MENU_PATH);
@@ -84,26 +84,143 @@ public class AgendaDbApp {
     System.out.println("Contato cadastrado com Sucesso!");
   }
 
-  private static void editContact(Scanner s) {}
+  private static void edit(Scanner s) throws IOException {
+    String BUSCAR_TXT = "src/main/resources/templates/buscar.txt";
+    FileHelper.printFromFile(BUSCAR_TXT);
 
-  private static void deleteContact(Scanner s) throws IOException {
+    switch (s.nextLine()) {
+      case "1":
+        editOptions(s, serchByName(s));
+        break;
+      case "2":
+        editOptions(s, serchByID(s));
+        break;
+      default:
+        System.out.println("Comando não encontrado");
+        break;
+    }
+  }
+
+  private static void editOptions(Scanner s, Contact c) throws IOException {
+    String EDICAO_TXT = "src/main/resources/templates/edicao/edicao.txt";
+    FileHelper.printFromFile(EDICAO_TXT);
+
+    switch (s.nextLine()) {
+      case "1":
+        editContact(s, c);
+        break;
+      case "2":
+        editPhone(s, c);
+        break;
+      case "3":
+        editGroup(s, c.getGroups());
+        break;
+      default:
+        System.out.println("Comando não encontrado");
+        break;
+    }
+  }
+
+  private static void editContact(Scanner s, Contact c) throws IOException {
+    String EDICAO_TXT = "src/main/resources/templates/edicao/contato.txt";
+    FileHelper.printFromFile(EDICAO_TXT);
+
+    switch (s.nextLine()) {
+      case "1":
+        System.out.println("Informe o novo Primeiro nome:");
+        c.setFirstName(s.nextLine());
+        new ContactController(CONNECTION).update(c);
+        System.out.println("Contato editado com sucesso");
+        break;
+      case "2":
+        System.out.println("Informe o novo Sobrenome");
+        c.setLastName(s.nextLine());
+        new ContactController(CONNECTION).update(c);
+        System.out.println("Contato editado com sucesso");
+        break;
+      case "3":
+        System.out.println("Informe o novo Email");
+        c.setEmail(s.nextLine());
+        new ContactController(CONNECTION).update(c);
+        System.out.println("Contato editado com sucesso");
+        break;
+      default:
+        System.out.println("Comando não encontrado");
+        break;
+    }
+  }
+
+  private static void editPhone(Scanner s, Contact c) throws IOException {
+    System.out.println("Informe o telefone que deseja alterar");
+    String tel = s.nextLine();
+    Phone p = new Phone();
+
+    c.getPhones()
+        .forEach(
+            phone -> {
+              if (phone.getPhone().equals(tel)) {
+                p.setPhoneId(phone.getPhoneId());
+                p.setPhone(phone.getPhone());
+              }
+            });
+
+    if (p.getPhoneId() == null) {
+      System.out.println("Telefone não encontrado");
+      return;
+    }
+
+    String EDICAO_TXT = "src/main/resources/templates/edicao/telefone.txt";
+    FileHelper.printFromFile(EDICAO_TXT);
+
+    switch (s.nextLine()) {
+      case "1":
+        System.out.println("Informe o novo Telefone:");
+        p.setPhone(s.nextLine());
+        new PhoneController(CONNECTION).update(p);
+        System.out.println("Contato editado com sucesso");
+        break;
+      case "2":
+        new ContactController(CONNECTION).removePhone(c, p);
+        System.out.println("Contato editado com sucesso");
+        break;
+      case "3":
+        System.out.println("Falta implementar");
+        break;
+      default:
+        System.out.println("Comando não encontrado");
+        break;
+    }
+  }
+
+  private static void editGroup(Scanner s, List<Group> gs) throws IOException {
+    String EDICAO_TXT = "src/main/resources/templates/buscar.txt";
+    FileHelper.printFromFile(EDICAO_TXT);
+
+    switch (s.nextLine()) {
+      case "1":
+        serchByName(s);
+        break;
+      case "2":
+        serchByID(s);
+        break;
+    }
+  }
+
+  private static void delete(Scanner s) throws IOException {
     String DELETE_TXT = "src/main/resources/templates/delete.txt";
     FileHelper.printFromFile(DELETE_TXT);
 
     switch (s.nextLine()) {
       case "1":
-        deleteByNome(s);
+        deleteContact(serchByName(s));
         break;
       case "2":
-        deleteById(s);
+        deleteContact(serchByID(s));
         break;
     }
   }
 
-  private static void deleteByNome(Scanner s) {
-    System.out.println("Informe o nome Completo do Contato");
-    Contact c = new ContactController(CONNECTION).getContactByName(s.nextLine());
-
+  private static void deleteContact(Contact c) {
     if (!(c == null)) {
       new ContactController(CONNECTION).delete(c);
       System.out.println("Contato Deletado com sucesso!");
@@ -112,15 +229,15 @@ public class AgendaDbApp {
     }
   }
 
-  private static void deleteById(Scanner s) {
-    System.out.println("Informe o ID Contato");
-    Contact c = new ContactController(CONNECTION).getContactById(s.nextInt());
+  private static Contact serchByName(Scanner s) {
+    System.out.println("Informe o nome Completo do Contato");
+    return new ContactController(CONNECTION).getContactByName(s.nextLine());
+  }
 
-    if (!(c == null)) {
-      new ContactController(CONNECTION).delete(c);
-    } else {
-      System.out.println("Contato não encontrado");
-    }
+  private static Contact serchByID(Scanner s) {
+    System.out.println("Informe o ID Contato");
+    String id = s.nextLine();
+    return new ContactController(CONNECTION).getContactById(Integer.parseInt(id));
   }
 
   private static List<Phone> interatorPhone(Scanner s) {

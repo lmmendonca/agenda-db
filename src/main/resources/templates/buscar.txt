@@ -1,0 +1,4 @@
+Informe a opção que deseja executar:
+
+1 - Bucar contato pelo Nome Completo;
+2 - Bucar contato pelo ID;

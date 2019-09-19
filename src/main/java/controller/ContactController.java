@@ -258,7 +258,7 @@ public class ContactController {
             });
   }
 
-  private Contact update(Contact c) {
+  public Contact update(Contact c) {
     String sql =
         "UPDATE contacts "
             + "SET first_name = ? "
@@ -281,5 +281,25 @@ public class ContactController {
     }
 
     return null;
+  }
+
+  public void deleteContactsPhonesByPhoneId(Contact c, Phone p){
+      String sql = "DELETE FROM contacts_phones WHERE phones_id = ? and contact_id = ?;";
+
+      try {
+          PreparedStatement pstmt = connection.prepareStatement(sql);
+
+          pstmt.setInt(1, p.getPhoneId());
+          pstmt.setInt(2, c.getContactId());
+          pstmt.executeUpdate();
+
+      } catch (SQLException e) {
+          System.out.println(e.getMessage());
+      }
+  }
+
+  public void removePhone(Contact c, Phone p) {
+      validateDeletePhoneNecessary(c);
+      deleteContactsPhonesByPhoneId(c, p);
   }
 }

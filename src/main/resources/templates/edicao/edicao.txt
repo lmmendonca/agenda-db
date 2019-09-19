@@ -1,0 +1,7 @@
+EDICAO
+
+Informe a opção para Editar:
+
+1 - Editar informações do Contato;
+2 - Editar Telefones do Contato;
+3 - Editar Grupos do Contato;

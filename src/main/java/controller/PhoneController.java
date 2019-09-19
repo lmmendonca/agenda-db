@@ -121,7 +121,7 @@ public class PhoneController {
     return null;
   }
 
-  private Phone update(Phone p) {
+  public Phone update(Phone p) {
     String sql = "UPDATE phones SET phone = ? WHERE phone_id = ?;";
 
     try {

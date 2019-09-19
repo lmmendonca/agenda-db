@@ -1,0 +1,5 @@
+Informe o que deseja editar do grupo:
+
+1 - Alterar Descricao de grupo;
+2 - Remover Contato do grupo;
+3 - Adicionar Contato a novo grupo;

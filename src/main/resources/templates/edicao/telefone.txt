@@ -1,0 +1,5 @@
+Informe o que deseja editar:
+
+1 - Alterar telefone;
+2 - Remover Telefone do contato;
+3 - Adicionar Telefone ao Contato;
