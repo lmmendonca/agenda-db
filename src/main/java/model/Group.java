@@ -14,7 +14,11 @@ public class Group {
     this.description = description;
   }
 
-  public Integer getGroupId() {
+    public Group() {
+
+    }
+
+    public Integer getGroupId() {
     return groupId;
   }
 

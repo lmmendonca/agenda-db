@@ -39,7 +39,11 @@ public class GroupsController {
 
   public List<Group> create(List<Group> g) {
     if (g.size() > 0) {
-      g.forEach(this::create);
+
+      g.forEach(group -> {
+          if (group.getGroupId() == null) create(group);
+      });
+
       return g;
     }
     return null;
@@ -104,14 +108,14 @@ public class GroupsController {
     return null;
   }
 
-  private Group update(Group g) {
+  public Group update(Group g) {
     String sql = "UPDATE groups SET description = ? WHERE group_id = ?;";
 
     try {
       PreparedStatement pstmt = connection.prepareStatement(sql);
       pstmt.setString(1, g.getDescription());
       pstmt.setInt(2, g.getGroupId());
-      pstmt.executeQuery();
+      pstmt.executeUpdate();
 
       return g;
 

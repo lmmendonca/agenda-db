@@ -1,5 +1,3 @@
-EDICAO
-
 Informe a opção para Editar:
 
 1 - Editar informações do Contato;

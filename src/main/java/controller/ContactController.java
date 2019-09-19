@@ -119,7 +119,7 @@ public class ContactController {
     return null;
   }
 
-  private void createContactsPhones(Contact c) {
+  public void createContactsPhones(Contact c) {
     String sql = "INSERT INTO contacts_phones(contact_id, phone_id) VALUES (?, ?);";
 
     for (Phone p : c.getPhones()) {
@@ -150,6 +150,22 @@ public class ContactController {
       }
     }
   }
+
+    public void createContactsGroups(Contact c, List<Group> groups) {
+        String sql = "INSERT INTO contacts_groups(contact_id, group_id) VALUES (?, ?);";
+
+        for (Group g : groups) {
+            try {
+                PreparedStatement pstmt = connection.prepareStatement(sql);
+                pstmt.setInt(1, c.getContactId());
+                pstmt.setInt(2, g.getGroupId());
+                pstmt.executeUpdate();
+
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
 
   public Contact delete(Contact c) {
     String sql = "DELETE FROM contacts where contact_id = ?;";
@@ -261,9 +277,9 @@ public class ContactController {
   public Contact update(Contact c) {
     String sql =
         "UPDATE contacts "
-            + "SET first_name = ? "
-            + "AND last_name = ? "
-            + "AND email = ? "
+            + "SET first_name = ?, "
+            + "last_name = ?, "
+            + "email = ? "
             + "WHERE contact_id = ?;";
 
     try {
@@ -272,7 +288,7 @@ public class ContactController {
       pstmt.setString(2, c.getLastName());
       pstmt.setString(3, c.getEmail());
       pstmt.setInt(4, c.getContactId());
-      pstmt.executeQuery();
+      pstmt.executeUpdate();
 
       return c;
 
@@ -283,23 +299,43 @@ public class ContactController {
     return null;
   }
 
-  public void deleteContactsPhonesByPhoneId(Contact c, Phone p){
-      String sql = "DELETE FROM contacts_phones WHERE phones_id = ? and contact_id = ?;";
+  public void deleteContactsGroups(Contact c, Group g) {
+    String sql = "DELETE FROM contacts_groups WHERE group_id = ? and contact_id = ?;";
 
-      try {
-          PreparedStatement pstmt = connection.prepareStatement(sql);
+    try {
+      PreparedStatement pstmt = connection.prepareStatement(sql);
 
-          pstmt.setInt(1, p.getPhoneId());
-          pstmt.setInt(2, c.getContactId());
-          pstmt.executeUpdate();
+      pstmt.setInt(1, g.getGroupId());
+      pstmt.setInt(2, c.getContactId());
+      pstmt.executeUpdate();
 
-      } catch (SQLException e) {
-          System.out.println(e.getMessage());
-      }
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
+    }
+  }
+
+  public void deleteContactsPhones(Contact c, Phone p) {
+    String sql = "DELETE FROM contacts_phones WHERE phone_id = ? and contact_id = ?;";
+
+    try {
+      PreparedStatement pstmt = connection.prepareStatement(sql);
+
+      pstmt.setInt(1, p.getPhoneId());
+      pstmt.setInt(2, c.getContactId());
+      pstmt.executeUpdate();
+
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
+    }
   }
 
   public void removePhone(Contact c, Phone p) {
-      validateDeletePhoneNecessary(c);
-      deleteContactsPhonesByPhoneId(c, p);
+    validateDeletePhoneNecessary(c);
+    deleteContactsPhones(c, p);
+  }
+
+  public void removeGroup(Contact c, Group g) {
+    validateDeletePhoneNecessary(c);
+    deleteContactsGroups(c, g);
   }
 }

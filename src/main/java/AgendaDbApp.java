@@ -1,4 +1,5 @@
 import controller.ContactController;
+import controller.GroupsController;
 import controller.PhoneController;
 import helper.FileHelper;
 import model.Contact;
@@ -113,7 +114,7 @@ public class AgendaDbApp {
         editPhone(s, c);
         break;
       case "3":
-        editGroup(s, c.getGroups());
+        editGroup(s, c);
         break;
       default:
         System.out.println("Comando não encontrado");
@@ -151,6 +152,11 @@ public class AgendaDbApp {
   }
 
   private static void editPhone(Scanner s, Contact c) throws IOException {
+    if (c.getPhones().size() == 0) {
+      System.out.println("O contato não possui telefone cadastrado");
+      return;
+    }
+
     System.out.println("Informe o telefone que deseja alterar");
     String tel = s.nextLine();
     Phone p = new Phone();
@@ -192,17 +198,53 @@ public class AgendaDbApp {
     }
   }
 
-  private static void editGroup(Scanner s, List<Group> gs) throws IOException {
-    String EDICAO_TXT = "src/main/resources/templates/buscar.txt";
-    FileHelper.printFromFile(EDICAO_TXT);
+  private static void editGroup(Scanner s, Contact c) throws IOException {
+    System.out.println("Deseja editar um grupo existente? (S/ Outra tecla)");
 
-    switch (s.nextLine()) {
-      case "1":
-        serchByName(s);
-        break;
-      case "2":
-        serchByID(s);
-        break;
+    if (s.nextLine().equals("s")) {
+      System.out.println("Informe a Descrição do grupo que deseja alterar");
+      String descricao = s.nextLine();
+      Group grupo = new Group();
+
+      c.getGroups()
+          .forEach(
+              g -> {
+                if (g.getDescription().equals(descricao)) {
+                  grupo.setGroupId(g.getGroupId());
+                  grupo.setDescription(g.getDescription());
+                }
+              });
+
+      if (grupo.getGroupId() == null) {
+        System.out.println("Grupo não encontrado");
+        return;
+      }
+
+      String EDICAO_TXT = "src/main/resources/templates/edicao/grupo.txt";
+      FileHelper.printFromFile(EDICAO_TXT);
+
+      switch (s.nextLine()) {
+        case "1":
+          System.out.println("Informe a nova descricao");
+          grupo.setDescription(s.nextLine());
+          new GroupsController(CONNECTION).update(grupo);
+          System.out.println("Descrição do grupo alterada com sucesso!");
+          break;
+        case "2":
+          new ContactController(CONNECTION).removeGroup(c, grupo);
+          System.out.println("Grupo removido com Sucesso!");
+          break;
+        default:
+          System.out.println("Comando não encontrado");
+          break;
+      }
+    }
+
+    System.out.println("Deseja adicionar um novo grupo ao contato? (S/ Outra tecla)");
+
+    if (s.nextLine().toUpperCase().equals("S")) {
+      new ContactController(CONNECTION)
+          .createContactsGroups(c, new GroupsController(CONNECTION).create(interatorGroup(s)));
     }
   }
 
@@ -274,11 +316,22 @@ public class AgendaDbApp {
 
   private static Phone addPhone(Scanner s) {
     System.out.println("Informe o Telefone");
-    return new Phone(s.nextLine());
+    String tel = s.nextLine();
+    Phone phone = new PhoneController(CONNECTION).getPhoneByPhone(tel);
+
+    if (phone == null) return new Phone(tel);
+
+    return phone;
   }
 
   private static Group addGroup(Scanner s) {
     System.out.println("Informe a Descricao do Grupo");
-    return new Group(s.nextLine());
+
+    String descricao = s.nextLine();
+    Group group = new GroupsController(CONNECTION).getGroupByDescription(descricao);
+
+    if (group == null) return new Group(descricao);
+
+    return group;
   }
 }

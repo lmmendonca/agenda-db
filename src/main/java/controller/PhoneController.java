@@ -39,7 +39,11 @@ public class PhoneController {
 
   public List<Phone> create(List<Phone> p) {
     if (p.size() > 0) {
-      p.forEach(this::create);
+
+      p.forEach(phone -> {
+          if (phone.getPhoneId() == null) create(phone);
+      });
+
       return p;
     }
     return null;
@@ -128,7 +132,7 @@ public class PhoneController {
       PreparedStatement pstmt = connection.prepareStatement(sql);
       pstmt.setString(1, p.getPhone());
       pstmt.setInt(2, p.getPhoneId());
-      pstmt.executeQuery();
+      pstmt.executeUpdate();
 
       return p;
 
