@@ -1,0 +1,59 @@
+@startuml
+actor User
+boundary Terminal
+
+autonumber
+User -> Terminal : printAgenda()
+Terminal -> Main : printAgenda()
+Main -> Agenda : printAgenda()
+Terminal <- Agenda : Impressao dos contatos
+
+autonumber
+User -> Terminal : addContato()
+Terminal -> Main : addContato()
+Main -> Agenda : addContato()
+Agenda -> Agenda : save()
+
+autonumber
+User -> Terminal : removeContato()
+Terminal -> Main : removeContato()
+Main -> Agenda : removeContato()
+Agenda -> Agenda : save()
+
+
+autonumber
+User -> Terminal : addTelefone()
+Terminal -> Main : addTelefone()
+Main -> Agenda : addTelefone()
+Agenda -> Agenda : save()
+
+
+
+autonumber
+User -> Terminal : editaContato()
+Terminal -> Main : editaContato()
+Main -> Agenda : editaContato()
+Agenda -> Agenda : save()
+
+
+autonumber
+User -> Terminal : editaTelefone()
+Terminal -> Main : editaTelefone()
+Main -> Agenda : editaTelefone()
+Agenda -> Agenda : save()
+
+
+autonumber
+User -> Terminal : removeTelefone()
+Terminal -> Main : removeTelefone()
+Main -> Agenda : editTelefone()
+Agenda -> Agenda : save()
+
+
+autonumber
+User -> Terminal : finalizar()
+Terminal -> Main : close()
+Main -> Agenda : close()
+Agenda -> Contatos : save()
+
+@enduml

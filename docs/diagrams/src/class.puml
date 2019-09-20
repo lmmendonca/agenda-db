@@ -1,0 +1,58 @@
+@startuml
+
+title Global View - Class Diagram
+
+left to right direction
+
+class Agenda
+class Contato
+
+class Agenda {
+-List<Contato> contatos
+
++getContatos()
++setContatos(List<Contato> contatos)
+-sort()
++deleteContato(String nome)
++findContato(String nome)
++limparAgenda()
+-size()
++nextId()
++save()
++printAgenda()
++toString()
+}
+
+class Contato {
+-Integer id
+-String nome
+-List<String> telefones
+
++getNome()
++setNome(String nome)
++getTelefone()
++setTelefone(List<String> telefones)
++getId()
++setId(Integer id)
++toString()
++addTelefone(String telefone)
++removeTelefone(String telefone)
++editaTelefone(String oldTel, String newTel)
+-findTelefone(String telefone)
++existTelefone(String telefone)
+}
+
+class AgendaTerminalApp {
++main(String[] args)
+-void editaContato(Agenda agenda, Scanner scanner)
+-void removeContato(Agenda agenda, Scanner scanner)
+-void addContato(Agenda agenda, Scanner scanner)
+-List<Contato> restauraAgenda()
+
+}
+
+Agenda  o--> "n"  Contato : possui
+
+AgendaTerminalApp <|-left- Agenda
+
+@enduml

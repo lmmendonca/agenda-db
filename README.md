@@ -10,10 +10,16 @@
 Power By: Leonardo Maximino de Mendonça
 
 ## Introdução
-Teste
+O Sistema **AGENDA DB** consiste em uma aplicação executavel via linha de comando com o foco em 
+substituir agendas manuscristas por um sistema simples e programavel.
+
+A estrutura do sistema está dividia no padrão MVC onde os Models se encontram no diretorio 
+```src/main/java/model```, os Controllers no diretorio ```src/main/java/controller``` e a View no 
+arquivo```src/main/java/AgendaDbApp.java```.
 
 ## Tecnologias aplicadas
-Teste
+Para a realização do projeto foi utilizado a linguagem Java na versão 8 junto com o SQLite como SGBD, 
+além do maven como gerenciador de dependencias.
 
 ## Quick-start
 Primeiro, tenha certeza que pussi instalado o Java vesão 8, & uma versão recente do maven.
@@ -26,11 +32,22 @@ cd agenda-db/
 
 mvn install
 
-java -jar target/agenda-db-0.0.1.jar
+java -jar target/agenda-db-1.0.0.jar
 
 ```
 
 
 ## Docs
-As imagens dos diagramas estão disponiveis no diretorio ```docs/diagrams/images``` e o codigo utilizado para gerar eles estão no diretorio
-```docs/diagrams/src```
+O codigo utilizado para gerar os diagramas estão no diretorio ```docs/diagrams/src```, abaixo está
+listado as imagens dos diagramas disponiveis:
+
+#### Caso de Uso
+![UC](docs/diagrams/images/use_case.png)
+
+#### Classe
+![Classe](docs/diagrams/images/class_.png)
+
+#### Sequencia
+![Sequencia](docs/diagrams/images/sequence.png)
+
+

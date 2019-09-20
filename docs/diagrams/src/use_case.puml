@@ -1,0 +1,23 @@
+@startuml
+
+title Global View - Use Case Diagram
+
+left to right direction
+
+actor user
+
+user --> (Apagar Contato)
+user --> (Editar Contato)
+user --> (Cadastrar Contato)
+user --> (Listar Contato)
+user --> (Visualizar Menu)
+user --> (Sair da agenda)
+
+(Cadastrar Contato) ..> (Salvar arquivo) : include
+(Apagar Contato) ..> (Salvar arquivo) : include
+(Editar Contato) ..> (Salvar arquivo) : include
+
+(Apagar Contato) -left-> (Verifica Existencia) : include
+(Editar Contato) -> (Verifica Existencia) : include
+
+@enduml
