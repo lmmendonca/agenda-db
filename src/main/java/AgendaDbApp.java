@@ -30,7 +30,7 @@ public class AgendaDbApp {
 
         switch (comando) {
           case "1":
-            new ContactController(CONNECTION).getAll().forEach(System.out::println);
+              listagem();
             break;
           case "2":
             addContact(scanner);
@@ -59,6 +59,58 @@ public class AgendaDbApp {
     } while (!comando.equals("9"));
   }
 
+    private static void listagem() {
+        tableHeader();
+        new ContactController(CONNECTION).getAll().forEach(AgendaDbApp::print);
+    }
+
+    private static void tableHeader() {
+        System.out.format(
+                "+-----+------------+---------------------------+---------------------------+------------------+---------------+%n");
+        System.out.format(
+                "| ID  | Nome       | Sobrenome                 | Email                     | Telefone         | Grupo         |%n");
+        System.out.format(
+                "+-----+------------+---------------------------+---------------------------+------------------+---------------+%n");
+    }
+
+    private static void print(Contact c) {
+        if (c.getPhones().size() > 0) {
+
+            if (c.getGroups().size() > 0) {
+
+                for (Phone p : c.getPhones()) {
+                    for (Group g : c.getGroups()) {
+                        formatTable(c, p.formatPhone(), g.getDescription());
+                    }
+                }
+                return;
+
+            } else {
+                for (Phone p : c.getPhones()) {
+                    formatTable(c, p.formatPhone(), null);
+                }
+            }
+        } else if (c.getGroups().size() > 0) {
+            for (Group g : c.getGroups()) {
+                formatTable(c, null, g.getDescription());
+            }
+        } else {
+            formatTable(c, null, null);
+        }
+    }
+
+    private static void formatTable(Contact c, String phone, String group) {
+        String leftAlignFormat = "| %-3s | %-10s | %-25s | %-25s | %-15s | %-13s |%n";
+        System.out.format(
+                leftAlignFormat,
+                c.getContactId(),
+                c.getFirstName(),
+                c.getLastName(),
+                c.getEmail(),
+                phone == null ? "Sem Telefone" : phone,
+                group == null ? "Sem Grupo" : group);
+    }
+
   private static void addContact(Scanner s) {
     Contact c = new Contact();
 
@@ -83,6 +135,8 @@ public class AgendaDbApp {
 
     new ContactController(CONNECTION).create(c);
     System.out.println("Contato cadastrado com Sucesso!");
+      tableHeader();
+      print(c);
   }
 
   private static void edit(Scanner s) throws IOException {
@@ -103,22 +157,24 @@ public class AgendaDbApp {
   }
 
   private static void editOptions(Scanner s, Contact c) throws IOException {
-    String EDICAO_TXT = "src/main/resources/templates/edicao/edicao.txt";
-    FileHelper.printFromFile(EDICAO_TXT);
+      if (c != null) {
+          String EDICAO_TXT = "src/main/resources/templates/edicao/edicao.txt";
+          FileHelper.printFromFile(EDICAO_TXT);
 
-    switch (s.nextLine()) {
-      case "1":
-        editContact(s, c);
-        break;
-      case "2":
-        editPhone(s, c);
-        break;
-      case "3":
-        editGroup(s, c);
-        break;
-      default:
-        System.out.println("Comando não encontrado");
-        break;
+          switch (s.nextLine()) {
+              case "1":
+                  editContact(s, c);
+                  break;
+              case "2":
+                  editPhone(s, c);
+                  break;
+              case "3":
+                  editGroup(s, c);
+                  break;
+              default:
+                  System.out.println("Comando não encontrado");
+                  break;
+          }
     }
   }
 
@@ -151,54 +207,64 @@ public class AgendaDbApp {
     }
   }
 
-  private static void editPhone(Scanner s, Contact c) throws IOException {
-    if (c.getPhones().size() == 0) {
-      System.out.println("O contato não possui telefone cadastrado");
-      return;
+    private static void editPhone(Scanner s, Contact c) throws IOException {
+
+        System.out.println("Deseja editar um telefone existente? (S/ Outra tecla)");
+
+        if (c.getPhones().size() == 0) {
+            System.out.println("O contato não possui telefone cadastrado");
+            return;
+        }
+
+        if (s.nextLine().equals("s")) {
+            System.out.println("Informe o telefone que deseja alterar");
+            String tel = s.nextLine();
+            Phone p = new Phone();
+
+            c.getPhones()
+                    .forEach(
+                            phone -> {
+                                if (phone.getPhone().equals(tel)) {
+                                    p.setPhoneId(phone.getPhoneId());
+                                    p.setPhone(phone.getPhone());
+                                }
+                            });
+
+            if (p.getPhoneId() == null) {
+                System.out.println("Telefone não encontrado");
+                return;
+            }
+
+            String EDICAO_TXT = "src/main/resources/templates/edicao/telefone.txt";
+            FileHelper.printFromFile(EDICAO_TXT);
+
+            switch (s.nextLine()) {
+                case "1":
+                    System.out.println("Informe o novo Telefone:");
+                    p.setPhone(s.nextLine());
+                    new PhoneController(CONNECTION).update(p);
+                    System.out.println("Contato editado com sucesso");
+                    break;
+                case "2":
+                    new ContactController(CONNECTION).removePhone(c, p);
+                    System.out.println("Contato editado com sucesso");
+                    break;
+                default:
+                    System.out.println("Comando não encontrado");
+                    break;
+            }
+        }
+
+        System.out.println("Deseja adicionar um novo Telefone ao contato? (S/ Outra tecla)");
+
+        if (s.nextLine().toUpperCase().equals("S")) {
+            new ContactController(CONNECTION)
+                    .createContactsPhones(c,
+                            new PhoneController(CONNECTION).create(interatorPhone(s)));
+        }
     }
 
-    System.out.println("Informe o telefone que deseja alterar");
-    String tel = s.nextLine();
-    Phone p = new Phone();
-
-    c.getPhones()
-        .forEach(
-            phone -> {
-              if (phone.getPhone().equals(tel)) {
-                p.setPhoneId(phone.getPhoneId());
-                p.setPhone(phone.getPhone());
-              }
-            });
-
-    if (p.getPhoneId() == null) {
-      System.out.println("Telefone não encontrado");
-      return;
-    }
-
-    String EDICAO_TXT = "src/main/resources/templates/edicao/telefone.txt";
-    FileHelper.printFromFile(EDICAO_TXT);
-
-    switch (s.nextLine()) {
-      case "1":
-        System.out.println("Informe o novo Telefone:");
-        p.setPhone(s.nextLine());
-        new PhoneController(CONNECTION).update(p);
-        System.out.println("Contato editado com sucesso");
-        break;
-      case "2":
-        new ContactController(CONNECTION).removePhone(c, p);
-        System.out.println("Contato editado com sucesso");
-        break;
-      case "3":
-        System.out.println("Falta implementar");
-        break;
-      default:
-        System.out.println("Comando não encontrado");
-        break;
-    }
-  }
-
-  private static void editGroup(Scanner s, Contact c) throws IOException {
+    private static void editGroup(Scanner s, Contact c) throws IOException {
     System.out.println("Deseja editar um grupo existente? (S/ Outra tecla)");
 
     if (s.nextLine().equals("s")) {
@@ -259,27 +325,40 @@ public class AgendaDbApp {
       case "2":
         deleteContact(serchByID(s));
         break;
+        default:
+            System.out.println("Comando não encontrado");
+            break;
     }
   }
 
   private static void deleteContact(Contact c) {
-    if (!(c == null)) {
+      if (c != null) {
+          tableHeader();
+          print(c);
       new ContactController(CONNECTION).delete(c);
       System.out.println("Contato Deletado com sucesso!");
-    } else {
-      System.out.println("Contato não encontrado");
     }
   }
 
   private static Contact serchByName(Scanner s) {
     System.out.println("Informe o nome Completo do Contato");
-    return new ContactController(CONNECTION).getContactByName(s.nextLine());
+      Contact c = new ContactController(CONNECTION).getContactByName(s.nextLine());
+      if (c == null) {
+          System.out.println("Contato não encontrado");
+          return null;
+      }
+      return c;
   }
 
   private static Contact serchByID(Scanner s) {
     System.out.println("Informe o ID Contato");
     String id = s.nextLine();
-    return new ContactController(CONNECTION).getContactById(Integer.parseInt(id));
+      Contact c = new ContactController(CONNECTION).getContactById(Integer.parseInt(id));
+      if (c == null) {
+          System.out.println("Contato não encontrado");
+          return null;
+      }
+      return c;
   }
 
   private static List<Phone> interatorPhone(Scanner s) {

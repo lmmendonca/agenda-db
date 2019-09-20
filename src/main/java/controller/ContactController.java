@@ -87,8 +87,7 @@ public class ContactController {
           new GroupsController(connection).getGroupsByContactId(id),
           new PhoneController(connection).getPhonesByContactId(id));
 
-    } catch (SQLException e) {
-      System.out.println(e.getMessage());
+    } catch (SQLException ignored) {
     }
 
     return null;
@@ -112,8 +111,7 @@ public class ContactController {
           new GroupsController(connection).getGroupsByContactId(id),
           new PhoneController(connection).getPhonesByContactId(id));
 
-    } catch (SQLException e) {
-      System.out.println(e.getMessage());
+    } catch (SQLException ignored) {
     }
 
     return null;
@@ -135,7 +133,23 @@ public class ContactController {
     }
   }
 
-  private void createContactsGroups(Contact c) {
+    public void createContactsPhones(Contact c, List<Phone> phones) {
+        String sql = "INSERT INTO contacts_phones(contact_id, phone_id) VALUES (?, ?);";
+
+        for (Phone p : phones) {
+            try {
+                PreparedStatement pstmt = connection.prepareStatement(sql);
+                pstmt.setInt(1, c.getContactId());
+                pstmt.setInt(2, p.getPhoneId());
+                pstmt.executeUpdate();
+
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    private void createContactsGroups(Contact c) {
     String sql = "INSERT INTO contacts_groups(contact_id, group_id) VALUES (?, ?);";
 
     for (Group g : c.getGroups()) {

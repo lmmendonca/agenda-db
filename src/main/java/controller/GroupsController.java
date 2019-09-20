@@ -83,8 +83,7 @@ public class GroupsController {
 
       return new Group(rs.getInt(1), rs.getString(2));
 
-    } catch (SQLException e) {
-      System.out.println(e.getMessage());
+    } catch (SQLException ignored) {
     }
 
     return null;
