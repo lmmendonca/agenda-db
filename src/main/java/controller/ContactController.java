@@ -246,7 +246,7 @@ public class ContactController {
       ResultSet rs = pstmt.executeQuery();
 
       while (rs.next()) {
-        contacts.add(new Contact(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4)));
+        contacts.add(getContactById(rs.getInt(1)));
       }
 
     } catch (SQLException e) {

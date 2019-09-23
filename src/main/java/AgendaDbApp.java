@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class AgendaDbApp {
@@ -41,6 +42,10 @@ public class AgendaDbApp {
           case "4":
             delete(scanner);
             break;
+
+            case "5":
+                listagemByGroup(scanner);
+                break;
           case "8":
             FileHelper.printFromFile(MENU_PATH);
             break;
@@ -59,6 +64,9 @@ public class AgendaDbApp {
     } while (!comando.equals("9"));
   }
 
+    private static void listagemByGroup(Scanner s) {
+        new ContactController(CONNECTION).getContactByGroupId(Objects.requireNonNull(serchByDescription(s)).getGroupId()).forEach(AgendaDbApp::print);
+    }
     private static void listagem() {
         tableHeader();
         new ContactController(CONNECTION).getAll().forEach(AgendaDbApp::print);
@@ -360,6 +368,17 @@ public class AgendaDbApp {
       }
       return c;
   }
+
+    private static Group serchByDescription(Scanner s) {
+        System.out.println("Informe a Descricao do Grupo");
+        String description = s.nextLine();
+        Group g = new GroupsController(CONNECTION).getGroupByDescription(description);
+        if (g == null) {
+            System.out.println("Grupo não encontrado");
+            return null;
+        }
+        return g;
+    }
 
   private static List<Phone> interatorPhone(Scanner s) {
     List<Phone> phones = new ArrayList<>();
