@@ -15,7 +15,6 @@ public class Group {
   }
 
     public Group() {
-
     }
 
     public Integer getGroupId() {

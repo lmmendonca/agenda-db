@@ -2,6 +2,7 @@ HELP.md
 /target/
 !.mvn/wrapper/maven-wrapper.jar
 dependency-reduced-pom.xml
+db:sqlite
 
 ### STS ###
 .apt_generated

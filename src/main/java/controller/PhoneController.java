@@ -40,9 +40,12 @@ public class PhoneController {
   public List<Phone> create(List<Phone> p) {
     if (p.size() > 0) {
 
-      p.forEach(phone -> {
-          if (phone.getPhoneId() == null) create(phone);
-      });
+        p.forEach(
+                phone -> {
+                    if (phone.getPhoneId() == null) {
+                        create(phone);
+                    }
+                });
 
       return p;
     }

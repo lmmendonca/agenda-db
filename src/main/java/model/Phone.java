@@ -32,7 +32,7 @@ public class Phone {
     this.phone = phone;
   }
 
-    public String formatPhone() {
+  public String formatPhone() {
         return phone.replaceFirst("(\\d{2})(\\d)(\\d{4})(\\d{4})", "($1) $2 $3-$4");
     }
 

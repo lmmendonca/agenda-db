@@ -40,9 +40,12 @@ public class GroupsController {
   public List<Group> create(List<Group> g) {
     if (g.size() > 0) {
 
-      g.forEach(group -> {
-          if (group.getGroupId() == null) create(group);
-      });
+        g.forEach(
+                group -> {
+                    if (group.getGroupId() == null) {
+                        create(group);
+                    }
+                });
 
       return g;
     }

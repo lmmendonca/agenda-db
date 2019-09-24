@@ -65,8 +65,11 @@ public class AgendaDbApp {
   }
 
     private static void listagemByGroup(Scanner s) {
-        new ContactController(CONNECTION).getContactByGroupId(Objects.requireNonNull(serchByDescription(s)).getGroupId()).forEach(AgendaDbApp::print);
+        new ContactController(CONNECTION)
+                .getContactByGroupId(Objects.requireNonNull(serchByDescription(s)).getGroupId())
+                .forEach(AgendaDbApp::print);
     }
+
     private static void listagem() {
         tableHeader();
         new ContactController(CONNECTION).getAll().forEach(AgendaDbApp::print);
@@ -91,7 +94,6 @@ public class AgendaDbApp {
                         formatTable(c, p.formatPhone(), g.getDescription());
                     }
                 }
-                return;
 
             } else {
                 for (Phone p : c.getPhones()) {
